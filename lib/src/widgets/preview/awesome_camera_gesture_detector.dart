@@ -60,11 +60,11 @@ class AwesomeCameraGestureDetector extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _AwesomeCameraGestureDetector();
+    return AwesomeCameraGestureDetectorState();
   }
 }
 
-class _AwesomeCameraGestureDetector
+class AwesomeCameraGestureDetectorState
     extends State<AwesomeCameraGestureDetector> {
   double _zoomScale = 0;
   final double _accuracy = 0.01;
@@ -77,6 +77,12 @@ class _AwesomeCameraGestureDetector
   void initState() {
     _zoomScale = widget.initialZoom;
     super.initState();
+  }
+
+  void resetZoom() {
+    setState(() {
+      _zoomScale = 0;
+    });
   }
 
   @override

@@ -118,6 +118,8 @@ class CameraAwesomeBuilder extends StatefulWidget {
   /// You can use it to do whatever you want once a media has been saved
   final OnMediaCaptureEvent? onMediaCaptureEvent;
 
+  final GlobalKey<AwesomeCameraGestureDetectorState>? gestureZoomKey;
+
   const CameraAwesomeBuilder._({
     required this.sensorConfig,
     required this.enablePhysicalButton,
@@ -139,6 +141,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
     required this.pictureInPictureConfigBuilder,
     this.availableFilters,
     this.onMediaCaptureEvent,
+    this.gestureZoomKey,
   });
 
   /// Use the camera with the built-in interface.
@@ -239,6 +242,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
     PictureInPictureConfigBuilder? pictureInPictureConfigBuilder,
     List<AwesomeFilter>? filters,
     OnMediaCaptureEvent? onMediaCaptureEvent,
+    GlobalKey<AwesomeCameraGestureDetectorState>? gestureZoomKey,
   }) : this._(
           sensorConfig: sensorConfig ??
               SensorConfig.single(
@@ -262,6 +266,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
           pictureInPictureConfigBuilder: pictureInPictureConfigBuilder,
           availableFilters: filters,
           onMediaCaptureEvent: onMediaCaptureEvent,
+          gestureZoomKey: gestureZoomKey,
         );
 
   /// Use this constructor when you don't want to take pictures or record videos.
@@ -441,6 +446,7 @@ class _CameraWidgetBuilder extends State<CameraAwesomeBuilder>
                         Preview.hidden(),
                       )
                     : AwesomeCameraPreview(
+                        gestureZoomKey: widget.gestureZoomKey,
                         key: _cameraPreviewKey,
                         previewFit: widget.previewFit,
                         state: snapshot.requireData,

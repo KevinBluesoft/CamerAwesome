@@ -28,6 +28,7 @@ class AwesomeCameraPreview extends StatefulWidget {
   final EdgeInsets padding;
   final Alignment alignment;
   final PictureInPictureConfigBuilder? pictureInPictureConfigBuilder;
+  final GlobalKey<AwesomeCameraGestureDetectorState>? gestureZoomKey;
 
   const AwesomeCameraPreview({
     super.key,
@@ -41,6 +42,7 @@ class AwesomeCameraPreview extends StatefulWidget {
     required this.padding,
     required this.alignment,
     this.pictureInPictureConfigBuilder,
+    this.gestureZoomKey,
   });
 
   @override
@@ -176,6 +178,7 @@ class AwesomeCameraPreviewState extends State<AwesomeCameraPreview> {
                     });
                   },
                   child: AwesomeCameraGestureDetector(
+                    key: widget.gestureZoomKey,
                     onPreviewTapBuilder:
                         widget.onPreviewTap != null && _previewSize != null
                             ? OnPreviewTapBuilder(

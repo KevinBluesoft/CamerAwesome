@@ -18,6 +18,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.apparence.camerawesome.CamerawesomePlugin
 import com.apparence.camerawesome.models.FlashMode
 import com.apparence.camerawesome.sensors.SensorOrientation
+import com.apparence.camerawesome.utils.getPigeonPosition
 import com.apparence.camerawesome.utils.isMultiCamSupported
 import io.flutter.plugin.common.EventChannel
 import io.flutter.view.TextureRegistry
@@ -191,9 +192,27 @@ data class CameraXState(
             concurrentCamera!!.cameras.first().cameraControl.enableTorch(flashMode == FlashMode.ALWAYS)
         } else {
             val useCaseGroupBuilder = UseCaseGroup.Builder()
-            // Handle single camera
             val cameraSelector =
-                if (sensors.first().position == PigeonSensorPosition.FRONT) CameraSelector.DEFAULT_FRONT_CAMERA else CameraSelector.DEFAULT_BACK_CAMERA
+                CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                    .addCameraFilter(CameraFilter { cameraInfos ->
+                        val list = mutableListOf<CameraInfo>()
+                        var cameraSelected: CameraInfo? = null
+                        cameraInfos.forEach { cameraInfo ->
+                            val minZoom = cameraInfo.zoomState.value!!.minZoomRatio
+                            if (cameraSelected == null && Camera2CameraInfo.from(cameraInfo)
+                                    .getPigeonPosition() == PigeonSensorPosition.BACK
+                            ) {
+                                cameraSelected = cameraInfo
+                            }
+                            if (minZoom < 1) {
+                                cameraSelected = cameraInfo
+                            }
+                        }
+
+                        list.add(cameraSelected!!)
+
+                        return@CameraFilter list
+                    }).build()
             // Preview
             if (currentCaptureMode != CaptureModes.ANALYSIS_ONLY) {
                 previews!!.add(
@@ -266,6 +285,7 @@ data class CameraXState(
                 useCaseGroupBuilder.build(),
             )
             previewCamera!!.cameraControl.enableTorch(flashMode == FlashMode.ALWAYS)
+            setLinearZoom(0F)
         }
     }
 
@@ -316,7 +336,11 @@ data class CameraXState(
     }
 
     fun setLinearZoom(zoom: Float) {
-        mainCameraControl.setLinearZoom(zoom)
+        var ratio =
+            if (sensors.first().type == PigeonSensorType.ULTRAWIDEANGLE)
+                (((zoom * (1 - minZoomRatio)) + minZoomRatio).toFloat())
+            else (((zoom * (maxZoomRatio - 1)) + 1).toFloat())
+        mainCameraControl.setZoomRatio(ratio)
     }
 
     fun startFocusAndMetering(autoFocusAction: FocusMeteringAction) {

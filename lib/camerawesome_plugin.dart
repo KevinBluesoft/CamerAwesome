@@ -408,9 +408,6 @@ class CamerawesomePlugin {
   ///
   /// Only available on iOS for now
   static Future<SensorDeviceData> getSensors() async {
-    if (Platform.isAndroid) {
-      return Future.value(SensorDeviceData());
-    } else {
       // Can't use getter with pigeon, so we have to map the data manually...
       final frontSensors = await CameraInterface().getFrontSensors();
       final backSensors = await CameraInterface().getBackSensors();
@@ -468,7 +465,6 @@ class CamerawesomePlugin {
             .toList()
             .firstOrNull,
       );
-    }
   }
 
   // ---------------------------------------------------

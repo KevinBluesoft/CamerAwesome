@@ -12,7 +12,10 @@ import android.os.*
 import android.util.Log
 import android.util.Rational
 import android.util.Size
+import androidx.annotation.OptIn
+import androidx.annotation.RequiresApi
 import androidx.camera.camera2.Camera2Config
+import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -547,11 +550,42 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
     }
 
     override fun getFrontSensors(): List<PigeonSensorTypeDevice> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 
+    @OptIn(ExperimentalCamera2Interop::class)
     override fun getBackSensors(): List<PigeonSensorTypeDevice> {
-        TODO("Not yet implemented")
+        val provider = ProcessCameraProvider.getInstance(activity!!.baseContext).get()
+
+        val list = mutableListOf<PigeonSensorTypeDevice>();
+
+        provider.availableCameraInfos.forEach { cameraInfo ->
+            val zoomMin = cameraInfo.zoomState.value!!.minZoomRatio
+            val cameraId = Camera2CameraInfo.from(cameraInfo).cameraId
+
+            if (zoomMin < 1) {
+                list.add(
+                    PigeonSensorTypeDevice(
+                        sensorType = PigeonSensorType.ULTRAWIDEANGLE,
+                        name = "ULTRAWIDEANGLE",
+                        iso = 2.0,
+                        uid = cameraId,
+                        flashAvailable = true
+                    )
+                )
+                list.add(
+                    PigeonSensorTypeDevice(
+                        sensorType = PigeonSensorType.WIDEANGLE,
+                        name = "WIDEANGLE",
+                        iso = 2.0,
+                        uid = cameraId,
+                        flashAvailable = true
+                    )
+                )
+            }
+
+        }
+        return list
     }
 
     override fun pauseVideoRecording() {

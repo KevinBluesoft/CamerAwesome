@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 
 class AwesomeSensorTypeSelector extends StatefulWidget {
   final CameraState state;
+  final GlobalKey<AwesomeCameraGestureDetectorState>? gestureZoomKey;
 
   const AwesomeSensorTypeSelector({
     super.key,
     required this.state,
+    this.gestureZoomKey,
   });
 
   @override
@@ -89,6 +91,7 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
                     onTap: () {
                       widget.state.setSensorType(0, SensorType.ultraWideAngle,
                           _sensorDeviceData!.ultraWideAngle!.uid);
+                      widget.gestureZoomKey?.currentState?.resetZoom();
                     },
                   ),
                 if (_sensorDeviceData?.wideAngle != null)
@@ -98,6 +101,7 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
                     onTap: () {
                       widget.state.setSensorType(0, SensorType.wideAngle,
                           _sensorDeviceData!.wideAngle!.uid);
+                      widget.gestureZoomKey?.currentState?.resetZoom();
                     },
                   ),
                 if (_sensorDeviceData?.telephoto != null)
@@ -107,6 +111,7 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
                     onTap: () {
                       widget.state.setSensorType(0, SensorType.telephoto,
                           _sensorDeviceData!.telephoto!.uid);
+                      widget.gestureZoomKey?.currentState?.resetZoom();
                     },
                   ),
                 // Text(snapshot.data.toString()),
