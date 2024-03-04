@@ -646,8 +646,9 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
             this.flashMode = FlashMode.NONE
             this.aspectRatio = null
             this.rational = Rational(3, 4)
-            updateLifecycle(activity!!)
+            //updateLifecycle(activity!!)
         }
+        setZoom(0.0)
     }
 
     @SuppressLint("RestrictedApi")
