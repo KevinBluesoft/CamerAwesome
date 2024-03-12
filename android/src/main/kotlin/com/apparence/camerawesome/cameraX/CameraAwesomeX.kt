@@ -376,6 +376,7 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
     private suspend fun takePhotoWith(
         imageCapture: ImageCapture, imageFile: File
     ): Boolean = suspendCancellableCoroutine { continuation ->
+        Log.i("TEST", "takePhotoWith");
         val metadata = ImageCapture.Metadata()
         if (cameraState.sensors.size == 1 && cameraState.sensors.first().position == PigeonSensorPosition.FRONT) {
             metadata.isReversedHorizontal = cameraState.mirrorFrontCamera
@@ -383,7 +384,8 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
         val outputFileOptions =
             ImageCapture.OutputFileOptions.Builder(imageFile).setMetadata(metadata).build()
 //        for (imageCapture in cameraState.imageCaptures) {
-        imageCapture.targetRotation = orientationStreamListener!!.surfaceOrientation
+        //Comment to unable rotation for the final image taken
+        //imageCapture.targetRotation = orientationStreamListener!!.surfaceOrientation
         imageCapture.takePicture(outputFileOptions,
             ContextCompat.getMainExecutor(activity!!),
             object : ImageCapture.OnImageSavedCallback {
