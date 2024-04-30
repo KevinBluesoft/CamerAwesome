@@ -207,6 +207,11 @@ data class CameraXState(
                             if (minZoom < 1) {
                                 cameraSelected = cameraInfo
                             }
+
+                            if (Camera2CameraInfo.from(cameraInfo).cameraId == sensors.first().deviceId) {
+                                cameraSelected = cameraInfo
+                            }
+
                         }
 
                         list.add(cameraSelected!!)
@@ -325,7 +330,7 @@ data class CameraXState(
 //        Log.d("SurfaceProviderCamX", "Creating surface provider for $cameraId")
         return Preview.SurfaceProvider { request: SurfaceRequest ->
             val resolution = request.resolution
-            val texture = textureEntries[cameraId]!!.surfaceTexture()
+            val texture = textureEntries["0"]!!.surfaceTexture()
             texture.setDefaultBufferSize(resolution.width, resolution.height)
             val surface = Surface(texture)
             request.provideSurface(surface, executor) {

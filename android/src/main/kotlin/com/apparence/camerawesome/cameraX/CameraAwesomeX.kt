@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
+import android.graphics.Camera
 import android.hardware.camera2.CameraCharacteristics
 import android.location.Location
 import android.os.*
@@ -13,7 +14,6 @@ import android.util.Log
 import android.util.Rational
 import android.util.Size
 import androidx.annotation.OptIn
-import androidx.annotation.RequiresApi
 import androidx.camera.camera2.Camera2Config
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
@@ -555,17 +555,54 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
         return emptyList()
     }
 
+    @SuppressLint("RestrictedApi")
     @OptIn(ExperimentalCamera2Interop::class)
     override fun getBackSensors(): List<PigeonSensorTypeDevice> {
         val provider = ProcessCameraProvider.getInstance(activity!!.baseContext).get()
 
         val list = mutableListOf<PigeonSensorTypeDevice>();
 
-        provider.availableCameraInfos.forEach { cameraInfo ->
-            val zoomMin = cameraInfo.zoomState.value!!.minZoomRatio
-            val cameraId = Camera2CameraInfo.from(cameraInfo).cameraId
+        var backCameras = provider.availableCameraInfos.filter { camera -> camera.lensFacing == CameraSelector.LENS_FACING_BACK }
 
-            if (zoomMin < 1) {
+        val cameraWithMinZoom = backCameras.firstOrNull { camera -> camera.zoomState.value!!.minZoomRatio < 1 }
+
+        if(cameraWithMinZoom != null){
+            val cameraId = Camera2CameraInfo.from(cameraWithMinZoom).cameraId
+            list.add(
+                PigeonSensorTypeDevice(
+                    sensorType = PigeonSensorType.ULTRAWIDEANGLE,
+                    name = "ULTRAWIDEANGLE",
+                    iso = 2.0,
+                    uid = cameraId,
+                    flashAvailable = true
+                )
+            )
+            list.add(
+                PigeonSensorTypeDevice(
+                    sensorType = PigeonSensorType.WIDEANGLE,
+                    name = "WIDEANGLE",
+                    iso = 2.0,
+                    uid = cameraId,
+                    flashAvailable = true
+                )
+            )
+        } else {
+            val focalComparator = object : Comparator<CameraInfo> {
+                override fun compare(o1: CameraInfo, o2: CameraInfo): Int {
+                    val map = Camera2CameraInfo.from(o1).cameraCharacteristicsMap
+                    val cameraId1 = Camera2CameraInfo.from(o1).cameraId
+                    val cameraId2 = Camera2CameraInfo.from(o2).cameraId
+                    val cameraCharacteristics1 = map.get(cameraId1)
+                    val cameraCharacteristics2 = map.get(cameraId2)
+
+                    return ((cameraCharacteristics2?.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)?.firstOrNull() ?: 0).toInt() - (cameraCharacteristics1?.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)?.firstOrNull() ?: 0).toInt())
+
+                }
+            }
+            backCameras = backCameras.sortedWith(focalComparator)
+
+            if(backCameras.size > 1){
+                val cameraId = Camera2CameraInfo.from(backCameras.first()).cameraId
                 list.add(
                     PigeonSensorTypeDevice(
                         sensorType = PigeonSensorType.ULTRAWIDEANGLE,
@@ -575,17 +612,17 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
                         flashAvailable = true
                     )
                 )
-                list.add(
-                    PigeonSensorTypeDevice(
-                        sensorType = PigeonSensorType.WIDEANGLE,
-                        name = "WIDEANGLE",
-                        iso = 2.0,
-                        uid = cameraId,
-                        flashAvailable = true
-                    )
-                )
             }
-
+            val cameraId = Camera2CameraInfo.from(backCameras.last()).cameraId
+            list.add(
+                PigeonSensorTypeDevice(
+                    sensorType = PigeonSensorType.WIDEANGLE,
+                    name = "WIDEANGLE",
+                    iso = 2.0,
+                    uid = cameraId,
+                    flashAvailable = true
+                )
+            )
         }
         return list
     }
@@ -646,9 +683,9 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
             // TODO Make below variables parameters
             // Also reset flash mode and aspect ratio
             this.flashMode = FlashMode.NONE
-            this.aspectRatio = null
-            this.rational = Rational(3, 4)
-            //updateLifecycle(activity!!)
+            //this.aspectRatio = null
+            //this.rational = Rational(3, 4)
+            updateLifecycle(activity!!)
         }
         setZoom(0.0)
     }
