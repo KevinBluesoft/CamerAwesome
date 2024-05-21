@@ -64,7 +64,7 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
         }
 
         if (_sensorDeviceData == null ||
-            _sensorDeviceData!.availableBackSensors <= 0) {
+            _sensorDeviceData!.availableBackSensors <= 1) {
           return const SizedBox.shrink();
         }
 
