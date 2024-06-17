@@ -682,7 +682,7 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
             this.sensors = sensors
             // TODO Make below variables parameters
             // Also reset flash mode and aspect ratio
-            this.flashMode = FlashMode.NONE
+            //this.flashMode = FlashMode.NONE
             //this.aspectRatio = null
             //this.rational = Rational(3, 4)
             updateLifecycle(activity!!)
