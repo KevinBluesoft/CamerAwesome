@@ -567,6 +567,7 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
         val cameraWithMinZoom = backCameras.firstOrNull { camera -> camera.zoomState.value!!.minZoomRatio < 1 }
 
         if(cameraWithMinZoom != null){
+            cameraWithMinZoom.
             val cameraId = Camera2CameraInfo.from(cameraWithMinZoom).cameraId
             list.add(
                 PigeonSensorTypeDevice(
@@ -682,7 +683,7 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
             this.sensors = sensors
             // TODO Make below variables parameters
             // Also reset flash mode and aspect ratio
-            this.flashMode = FlashMode.NONE
+            //this.flashMode = FlashMode.NONE
             //this.aspectRatio = null
             //this.rational = Rational(3, 4)
             updateLifecycle(activity!!)
