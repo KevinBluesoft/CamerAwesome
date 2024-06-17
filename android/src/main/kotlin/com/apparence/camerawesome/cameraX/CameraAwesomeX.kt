@@ -567,6 +567,7 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
         val cameraWithMinZoom = backCameras.firstOrNull { camera -> camera.zoomState.value!!.minZoomRatio < 1 }
 
         if(cameraWithMinZoom != null){
+            cameraWithMinZoom.
             val cameraId = Camera2CameraInfo.from(cameraWithMinZoom).cameraId
             list.add(
                 PigeonSensorTypeDevice(
