@@ -104,7 +104,7 @@ abstract class CameraState {
     }
   }
 
-  void setSensorType(int cameraPosition, SensorType type, String deviceId) {
+  Future<void> setSensorType(int cameraPosition, SensorType type, String deviceId) async {
     final previous = cameraContext.sensorConfig;
     int sensorIndex = 0;
     final next = SensorConfig.multiple(
@@ -130,7 +130,7 @@ abstract class CameraState {
       flashMode: previous.flashMode,
       zoom: previous.zoom,
     );
-    cameraContext.setSensorConfig(next);
+    await cameraContext.setSensorConfig(next);
   }
 
   // PigeonSensorType? _sensorTypeFromPigeon(SensorType type) {

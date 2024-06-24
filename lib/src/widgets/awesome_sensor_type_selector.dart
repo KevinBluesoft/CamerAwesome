@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class AwesomeSensorTypeSelector extends StatefulWidget {
   final CameraState state;
   final GlobalKey<AwesomeCameraGestureDetectorState>? gestureZoomKey;
+  final Future<void> Function()? afterSelectedCamera;
 
   const AwesomeSensorTypeSelector({
     super.key,
     required this.state,
     this.gestureZoomKey,
+    this.afterSelectedCamera,
   });
 
   @override
@@ -88,9 +90,11 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
                   _SensorTypeButton(
                     sensorType: SensorType.ultraWideAngle,
                     isSelected: snapshot.data == SensorType.ultraWideAngle,
-                    onTap: () {
-                      widget.state.setSensorType(0, SensorType.ultraWideAngle,
-                          _sensorDeviceData!.ultraWideAngle!.uid);
+                    onTap: () async {
+                      widget.afterSelectedCamera?.call();
+                      await widget.state
+                          .setSensorType(0, SensorType.ultraWideAngle,
+                              _sensorDeviceData!.ultraWideAngle!.uid);
                       widget.gestureZoomKey?.currentState?.resetZoom();
                     },
                   ),
@@ -98,9 +102,11 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
                   _SensorTypeButton(
                     sensorType: SensorType.wideAngle,
                     isSelected: snapshot.data == SensorType.wideAngle,
-                    onTap: () {
-                      widget.state.setSensorType(0, SensorType.wideAngle,
-                          _sensorDeviceData!.wideAngle!.uid);
+                    onTap: () async {
+                      await widget.afterSelectedCamera?.call();
+                      await widget.state
+                          .setSensorType(0, SensorType.wideAngle,
+                              _sensorDeviceData!.wideAngle!.uid);
                       widget.gestureZoomKey?.currentState?.resetZoom();
                     },
                   ),
@@ -108,9 +114,11 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
                   _SensorTypeButton(
                     sensorType: SensorType.telephoto,
                     isSelected: snapshot.data == SensorType.telephoto,
-                    onTap: () {
-                      widget.state.setSensorType(0, SensorType.telephoto,
-                          _sensorDeviceData!.telephoto!.uid);
+                    onTap: () async {
+                      widget.afterSelectedCamera?.call();
+                      await widget.state
+                          .setSensorType(0, SensorType.telephoto,
+                              _sensorDeviceData!.telephoto!.uid);
                       widget.gestureZoomKey?.currentState?.resetZoom();
                     },
                   ),
